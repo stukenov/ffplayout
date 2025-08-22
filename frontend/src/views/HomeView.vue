@@ -4,20 +4,29 @@
             <SystemStats v-if="configStore.channels.length > 0" />
 
             <div class="w-full flex flex-wrap justify-center gap-1 md:gap-0 md:join mt-5">
-                <RouterLink to="/player" class="btn btn-primary join-item px-2">
+                <RouterLink
+                    :to="{ path: '/player', query: { channel: configStore.channels[configStore.i]?.id } }"
+                    class="btn btn-primary join-item px-2"
+                >
                     {{ t('button.player') }}
                 </RouterLink>
-                <RouterLink to="/media" class="btn btn-primary join-item px-2">
+                <RouterLink
+                    :to="{ path: '/media', query: { channel: configStore.channels[configStore.i]?.id } }"
+                    class="btn btn-primary join-item px-2"
+                >
                     {{ t('button.media') }}
                 </RouterLink>
                 <RouterLink
                     v-if="configStore.playout?.text?.add_text && !configStore.playout?.text?.text_from_filename"
-                    to="/message"
+                    :to="{ path: '/message', query: { channel: configStore.channels[configStore.i]?.id } }"
                     class="btn btn-primary join-item px-2"
                 >
                     {{ t('button.message') }}
                 </RouterLink>
-                <RouterLink to="/logging" class="btn btn-primary join-item px-2">
+                <RouterLink
+                    :to="{ path: '/logging', query: { channel: configStore.channels[configStore.i]?.id } }"
+                    class="btn btn-primary join-item px-2"
+                >
                     {{ t('button.logging') }}
                 </RouterLink>
                 <div class="dropdown">
@@ -32,7 +41,11 @@
                         </li>
                     </ul>
                 </div>
-                <RouterLink to="/configure" class="btn btn-primary join-item px-2" :title="t('button.configure')">
+                <RouterLink
+                    :to="{ path: '/configure', query: { channel: configStore.channels[configStore.i]?.id } }"
+                    class="btn btn-primary join-item px-2"
+                    :title="t('button.configure')"
+                >
                     <i class="bi bi-gear text-[17px]" />
                 </RouterLink>
                 <label class="join-item btn btn-primary swap swap-rotate px-2">

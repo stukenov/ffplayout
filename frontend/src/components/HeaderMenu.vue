@@ -59,7 +59,7 @@
                     </li>
                     <li class="bg-base-100 rounded-md">
                         <RouterLink
-                            to="/configure"
+                            :to="{ path: '/configure', query: { channel: configStore.channels[configStore.i]?.id } }"
                             class="h-[27px] leading-5"
                             active-class="is-active"
                             :title="t('button.configure')"
@@ -122,7 +122,7 @@
                 </li>
                 <li class="bg-base-100 rounded-md p-0">
                     <RouterLink
-                        to="/configure"
+                        :to="{ path: '/configure', query: { channel: configStore.channels[configStore.i]?.id } }"
                         class="h-[27px] leading-5"
                         active-class="is-active"
                         :title="t('button.configure')"
@@ -155,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -175,12 +175,28 @@ const indexStore = useIndex()
 const menuDropdown = ref()
 const isOpen = ref(false)
 
-const menuItems = ref([
-    { label: 'home', name: t('button.home'), link: '/' },
-    { label: 'player', name: t('button.player'), link: '/player' },
-    { label: 'media', name: t('button.media'), link: '/media' },
-    { label: 'message', name: t('button.message'), link: '/message' },
-    { label: 'logging', name: t('button.logging'), link: '/logging' },
+const menuItems = computed(() => [
+    { label: 'home', name: t('button.home'), link: { path: '/' } },
+    {
+        label: 'player',
+        name: t('button.player'),
+        link: { path: '/player', query: { channel: configStore.channels[configStore.i]?.id } },
+    },
+    {
+        label: 'media',
+        name: t('button.media'),
+        link: { path: '/media', query: { channel: configStore.channels[configStore.i]?.id } },
+    },
+    {
+        label: 'message',
+        name: t('button.message'),
+        link: { path: '/message', query: { channel: configStore.channels[configStore.i]?.id } },
+    },
+    {
+        label: 'logging',
+        name: t('button.logging'),
+        link: { path: '/logging', query: { channel: configStore.channels[configStore.i]?.id } },
+    },
 ])
 
 function closeMenu() {
@@ -228,6 +244,10 @@ function selectChannel(index: number) {
 
     configStore.getPlayoutConfig()
     configStore.getPlayoutOutputs()
+
+    router.replace({
+        query: { ...router.currentRoute.value.query, channel: configStore.channels[index].id },
+    })
 }
 
 function toggleTheme() {
