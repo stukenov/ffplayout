@@ -51,6 +51,23 @@ router.beforeEach(async (to, from, next) => {
         // const loc = i18n.locale.value === 'en-US' ? '' : `${i18n.locale.value}/`
         next('/')
     } else {
+        if (auth.isLogin && String(to.name) !== 'home') {
+            const chan = Number(to.query.channel)
+            if (chan) {
+                const idx = configStore.channels.findIndex((c) => c.id === chan)
+                if (idx !== -1) {
+                    configStore.i = idx
+                }
+            } else if (configStore.channels.length > 0) {
+                next({
+                    name: to.name!,
+                    query: { ...to.query, channel: configStore.channels[configStore.i].id },
+                    replace: true,
+                })
+                return
+            }
+        }
+
         next()
     }
 })
