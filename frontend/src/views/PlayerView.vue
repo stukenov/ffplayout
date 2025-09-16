@@ -276,7 +276,7 @@ import { usePlaylist } from '@/stores/playlist'
 
 const { locale, t } = useI18n()
 const { width } = useWindowSize({ initialWidth: 800 })
-const { mediaType } = stringFormatter()
+const { mediaType, mediaMimeType } = stringFormatter()
 const { processPlaylist, genUID } = playlistOperations()
 
 const authStore = useAuth()
@@ -388,13 +388,14 @@ function setPreviewData(path: string) {
     }
 
     const ext = previewName.value.split('.').slice(-1)[0].toLowerCase()
-
-    const fileType =
-        mediaType(previewName.value) === 'audio'
+    const currentType = mediaType(previewName.value)
+    const fallbackType =
+        currentType === 'audio'
             ? `audio/${ext}`
-            : mediaType(previewName.value) === 'live'
+            : currentType === 'live'
             ? 'application/x-mpegURL'
             : `video/${ext}`
+    const mimeType = mediaMimeType(previewName.value) ?? fallbackType
 
     if (configStore.playout.storage.extensions.includes(`${ext}`)) {
         isVideo.value = true
@@ -406,7 +407,7 @@ function setPreviewData(path: string) {
             preload: 'auto',
             sources: [
                 {
-                    type: fileType,
+                    type: mimeType,
                     src: previewUrl.value,
                 },
             ],
