@@ -7,6 +7,42 @@ dayjs.extend(timezone)
 import { useConfig } from '@/stores/config'
 
 export const stringFormatter = () => {
+    const liveMimeType: Record<string, string> = {
+        m3u8: 'application/x-mpegURL',
+    }
+
+    const videoMimeTypeMap: Record<string, string> = {
+        avi: 'video/x-msvideo',
+        flv: 'video/x-flv',
+        m2v: 'video/mpeg',
+        m4v: 'video/x-m4v',
+        mkv: 'video/x-matroska',
+        mov: 'video/quicktime',
+        mp4: 'video/mp4',
+        mpeg: 'video/mpeg',
+        mpg: 'video/mpeg',
+        mts: 'video/mp2t',
+        mxf: 'application/mxf',
+        ts: 'video/mp2t',
+        vob: 'video/x-ms-vob',
+        ogv: 'video/ogg',
+        webm: 'video/webm',
+        wmv: 'video/x-ms-wmv',
+    }
+
+    const audioMimeTypeMap: Record<string, string> = {
+        aac: 'audio/aac',
+        aiff: 'audio/aiff',
+        flac: 'audio/flac',
+        m4a: 'audio/mp4',
+        mp2: 'audio/mpeg',
+        mp3: 'audio/mpeg',
+        ogg: 'audio/ogg',
+        opus: 'audio/opus',
+        wav: 'audio/wav',
+        wma: 'audio/x-ms-wma',
+    }
+
     function fileSize(bytes: number | undefined, dp = 2) {
         if (!bytes) {
             return 0.0
@@ -106,26 +142,6 @@ export const stringFormatter = () => {
     }
 
     function mediaType(path: string) {
-        const liveType = ['m3u8']
-        const videoType = [
-            'avi',
-            'flv',
-            'm2v',
-            'm4v',
-            'mkv',
-            'mov',
-            'mp4',
-            'mpeg',
-            'mpg',
-            'mts',
-            'mxf',
-            'ts',
-            'vob',
-            'ogv',
-            'webm',
-            'wmv',
-        ]
-        const audioType = ['aac', 'aiff', 'flac', 'm4a', 'mp2', 'mp3', 'ogg', 'opus', 'wav', 'wma']
         const imageType = [
             'apng',
             'avif',
@@ -141,21 +157,31 @@ export const stringFormatter = () => {
             'tiff',
             'webp',
         ]
-        const ext = path.split('.').pop()
+        const ext = path.split('.').pop()?.toLowerCase()
 
         if (ext) {
-            if (liveType.includes(ext.toLowerCase())) {
+            if (liveMimeType[ext]) {
                 return 'live'
-            } else if (videoType.includes(ext.toLowerCase())) {
+            } else if (videoMimeTypeMap[ext]) {
                 return 'video'
-            } else if (audioType.includes(ext.toLowerCase())) {
+            } else if (audioMimeTypeMap[ext]) {
                 return 'audio'
-            } else if (imageType.includes(ext.toLowerCase())) {
+            } else if (imageType.includes(ext)) {
                 return 'image'
             }
         }
 
         return null
+    }
+
+    function mediaMimeType(path: string) {
+        const ext = path.split('.').pop()?.toLowerCase()
+
+        if (!ext) {
+            return null
+        }
+
+        return liveMimeType[ext] ?? videoMimeTypeMap[ext] ?? audioMimeTypeMap[ext] ?? null
     }
 
     function dir_file(path: string): { dir: string; file: string } {
@@ -177,6 +203,7 @@ export const stringFormatter = () => {
         toMin,
         secondsToTime,
         mediaType,
+        mediaMimeType,
         dir_file,
     }
 }
